@@ -1,6 +1,24 @@
 <?php
 include "../public/common/config.php";
-$sql="select * from user order by id";
+
+
+$page=$_GET['p']?$_GET['p']:1;
+$length=3;
+$offset=($page-1)*$length;
+$prevpage=$page-1;
+
+$sqltot="select count(*) from user";
+$rsttot=mysql_query($sqltot);
+$rowtot=mysql_fetch_row($rsttot);
+$pages=ceil($rowtot[0]/$length);
+
+if($page>=$pages){
+    $nextpage=$pages;
+}else{
+    $nextpage=$page+1;
+}
+
+$sql="select * from user order by id limit $offset,$length";
 
 $rst=mysql_query($sql);
 
@@ -40,6 +58,18 @@ $rst=mysql_query($sql);
             }
             ?>
         </table>
+
+        <?php
+        echo "
+        <h3>
+            <a href='?p=1'>First</a>
+            <a href='?p={$prevpage}'>Pre</a>
+            <a href='?p={$nextpage}'>Next</a>
+            <span>{$page}/{$pages}</span>
+            <a href='?p={$pages}'>Last</a>
+        </h3>";
+
+        ?>
     </center>
 </body>
 </html>
